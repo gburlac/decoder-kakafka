@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class ProtoDecoder {
 
@@ -27,6 +28,7 @@ public class ProtoDecoder {
             }
             Map<Integer, Object> decoded = decodeMessage(message);
             System.out.println(decoded);
+            System.out.println(formatDecodedJson(decoded));
         } catch (IOException ex) {
             System.err.println("Failed to read file: " + ex.getMessage());
         } catch (IllegalArgumentException ex) {
@@ -135,6 +137,54 @@ public class ProtoDecoder {
         }
 
         return bytes;
+    }
+
+    public static String formatDecodedJson(Map<Integer, Object> decoded) {
+        Map<Integer, Object> ordered = new TreeMap<>(decoded);
+        StringBuilder builder = new StringBuilder();
+        builder.append("Decode byte: {");
+        if (!ordered.isEmpty()) {
+            builder.append("\n");
+        }
+
+        int index = 0;
+        int total = ordered.size();
+        for (Map.Entry<Integer, Object> entry : ordered.entrySet()) {
+            String keyLabel = labelForField(entry.getKey());
+            String value = String.valueOf(entry.getValue())
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
+            String comma = (index < total - 1) ? "," : "";
+            builder.append("  \"")
+                .append(keyLabel)
+                .append("\": \"")
+                .append(value)
+                .append("\"")
+                .append(comma);
+            if (index < total - 1) {
+                builder.append("\n");
+            }
+            index++;
+        }
+
+        if (!ordered.isEmpty()) {
+            builder.append("\n");
+        }
+        builder.append("}");
+        return builder.toString();
+    }
+
+    private static String labelForField(int fieldNumber) {
+        switch (fieldNumber) {
+            case 1:
+                return "EventType";
+            case 2:
+                return "marketBriefId";
+            case 3:
+                return "GlobalClientID";
+            default:
+                return String.valueOf(fieldNumber);
+        }
     }
 
     private static class Varint {
