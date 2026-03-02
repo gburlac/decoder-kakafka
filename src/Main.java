@@ -1,14 +1,29 @@
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Main {
     public static void main(String[] args) {
-        byte[] message = new byte[] {
+        String hexInput;
+        if (args.length > 0) {
+            hexInput = String.join(" ", args);
+        } else {
+            hexInput = "08 03 12 14 6d 61 72 6b 65 74 42 72 69 65 66 49 64 41 42 43 31 31 32 38 18 b1 a8 03";
+        }
 
-            8, 1, 18, 21, 100, 117, 109, 109, 121, 95, 109, 97, 114, 107, 101, 116, 95, 98, 114, 105, 101, 102, 95, 105, 100, 24, -43, -18, 4
-
-        };
+        byte[] message = ProtoDecoder.parseHexString(hexInput);
 
         Map<Integer, Object> decoded = ProtoDecoder.decodeMessage(message);
-        System.out.println("Decode byte: " + decoded);
+        Map<Integer, Object> ordered = new TreeMap<>(decoded);
+
+        System.out.println("Decoded results: {");
+        int index = 0;
+        int total = ordered.size();
+        for (Map.Entry<Integer, Object> entry : ordered.entrySet()) {
+            String value = String.valueOf(entry.getValue()).replace("\\", "\\\\").replace("\"", "\\\"");
+            String comma = (index < total - 1) ? "," : "";
+            System.out.println("  \"" + entry.getKey() + "\": \"" + value + "\"" + comma);
+            index++;
+        }
+        System.out.println("}");
     }
 }
