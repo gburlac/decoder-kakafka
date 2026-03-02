@@ -1,4 +1,4 @@
-# decoder-kakafa
+# decoder-kakafka
 
 Minimal protobuf-like decoder that reads a binary file and prints decoded fields.
 
