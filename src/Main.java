@@ -19,13 +19,28 @@ public class Main {
 
         Map<Integer, Object> decoded = ProtoDecoder.decodeMessage(message);
         Map<Integer, Object> ordered = new TreeMap<>(decoded);
-        System.out.println("Decode byte: {");
+        System.out.println("Decode results: {");
         int index = 0;
         int total = ordered.size();
         for (Map.Entry<Integer, Object> entry : ordered.entrySet()) {
+            String keyLabel;
+            switch (entry.getKey()) {
+                case 1:
+                    keyLabel = "eventType";
+                    break;
+                case 2:
+                    keyLabel = "marketBriefId";
+                    break;
+                case 3:
+                    keyLabel = "globalClientID";
+                    break;
+                default:
+                    keyLabel = String.valueOf(entry.getKey());
+                    break;
+            }
             String value = String.valueOf(entry.getValue()).replace("\\", "\\\\").replace("\"", "\\\"");
             String comma = (index < total - 1) ? "," : "";
-            System.out.println("  \"" + entry.getKey() + "\": \"" + value + "\"" + comma);
+            System.out.println("  \"" + keyLabel + "\": \"" + value + "\"" + comma);
             index++;
         }
         System.out.println("}");
