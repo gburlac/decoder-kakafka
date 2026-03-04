@@ -142,7 +142,7 @@ public class ProtoDecoder {
     public static String formatDecodedJson(Map<Integer, Object> decoded) {
         Map<Integer, Object> ordered = new TreeMap<>(decoded);
         StringBuilder builder = new StringBuilder();
-        builder.append("Decode byte: {");
+        builder.append("Decoded results: {");
         if (!ordered.isEmpty()) {
             builder.append("\n");
         }
@@ -179,7 +179,7 @@ public class ProtoDecoder {
             case 1:
                 return "EventType";
             case 2:
-                return "marketBriefId";
+                return "MarketBriefId";
             case 3:
                 return "GlobalClientID";
             default:
