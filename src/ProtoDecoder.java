@@ -62,10 +62,23 @@ public class ProtoDecoder {
                     int length = (int) lengthVarint.value;
                     index = lengthVarint.nextIndex;
 
+                    if (length < 0) {
+                        throw new RuntimeException("Invalid length-delimited field length: " + length);
+                    }
+
+                    boolean truncated = false;
+                    if (index + length > data.length) {
+                        length = Math.max(0, data.length - index);
+                        truncated = true;
+                    }
+
                     byte[] strBytes = new byte[length];
                     System.arraycopy(data, index, strBytes, 0, length);
 
                     String value = new String(strBytes, StandardCharsets.UTF_8);
+                    if (truncated && length > 0) {
+                        value += " (truncated)";
+                    }
                     result.put(fieldNumber, value);
 
                     index += length;
@@ -182,6 +195,8 @@ public class ProtoDecoder {
                 return "MarketBriefId";
             case 3:
                 return "GlobalClientID";
+            case 4:
+                return "CampaignName";
             default:
                 return String.valueOf(fieldNumber);
         }
